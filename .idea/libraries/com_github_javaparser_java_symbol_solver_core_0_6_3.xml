@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="com.github.javaparser:java-symbol-solver-core:0.6.3" type="repository">
+    <properties maven-id="com.github.javaparser:java-symbol-solver-core:0.6.3" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-core/0.6.3/java-symbol-solver-core-0.6.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-logic/0.6.3/java-symbol-solver-logic-0.6.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/javassist/javassist/3.22.0-GA/javassist-3.22.0-GA.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-model/0.6.3/java-symbol-solver-model-0.6.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.5.5/javaparser-core-3.5.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/23.4-jre/guava-23.4-jre.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/errorprone/error_prone_annotations/2.0.18/error_prone_annotations-2.0.18.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-core/0.6.3/java-symbol-solver-core-0.6.3-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-logic/0.6.3/java-symbol-solver-logic-0.6.3-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/javassist/javassist/3.22.0-GA/javassist-3.22.0-GA-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/java-symbol-solver-model/0.6.3/java-symbol-solver-model-0.6.3-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.5.5/javaparser-core-3.5.5-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/23.4-jre/guava-23.4-jre-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/errorprone/error_prone_annotations/2.0.18/error_prone_annotations-2.0.18-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
