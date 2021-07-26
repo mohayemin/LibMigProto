@@ -6,7 +6,9 @@ import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        var methodMiner = new MethodMiner();
-        var methods = methodMiner.findAllMethods(Path.of("D:\\PhD\\LibMigProto\\repositories\\commons-csv\\src\\main"));
+        var libPath = Path.of("D:\\PhD\\LibMigProto-Data\\supercsv\\lib\\super-csv\\super-csv\\src\\main\\java");
+        var clientPath = Path.of("D:\\PhD\\LibMigProto-Data\\supercsv\\clients\\algem\\src");
+        var usageMiner = new UsageMiner(clientPath, libPath);
+        usageMiner.mine();
     }
 }
