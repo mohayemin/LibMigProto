@@ -1,9 +1,10 @@
 package ca.ualberta.libmigproto.usageminer;
 
+import ca.ualberta.libmigproto.config.ClientConfig;
+import ca.ualberta.libmigproto.config.LibConfig;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
@@ -11,7 +12,6 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import com.github.javaparser.utils.SourceRoot;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,20 +22,22 @@ public class UsageMiner {
     private final JavaSymbolSolver symbolResolver;
     private final CombinedTypeSolver typeResolver;
     private final JavaParserTypeSolver libTypeResolver;
-    private final String libPackage;
+    private final ClientConfig clientConfig;
+    private final LibConfig libConfig;
     private List<LibraryUsage> usages = new ArrayList<>();
 
-    public UsageMiner(Path clientSourcePath, Path libPath, String libPackage) {
-        this.libTypeResolver = new JavaParserTypeSolver(libPath.toFile());
+    public UsageMiner(ClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
+        this.libConfig = clientConfig.libConfig;
+
+        this.libTypeResolver = new JavaParserTypeSolver(libConfig.getSourceRootPath().toFile());
         this.typeResolver = new CombinedTypeSolver(
                 libTypeResolver,
-                new JavaParserTypeSolver(clientSourcePath.toFile()),
+                new JavaParserTypeSolver(clientConfig.getSourceRootPath().toFile()),
                 new ReflectionTypeSolver()
         );
-        this.libPackage = libPackage;
         this.symbolResolver = new JavaSymbolSolver(typeResolver);
-
-        this.clientSourceRoot = new SourceRoot(clientSourcePath);
+        this.clientSourceRoot = new SourceRoot(clientConfig.getSourceRootPath());
         this.clientSourceRoot.getParserConfiguration().setSymbolResolver(this.symbolResolver);
     }
 
@@ -51,20 +53,20 @@ public class UsageMiner {
 
     private void mineCompilationUnit(CompilationUnit compilationUnit) {
         compilationUnit.findAll(MethodCallExpr.class).forEach(call -> processMethodCall(compilationUnit, call));
-        compilationUnit.findAll(ObjectCreationExpr.class).forEach(objCreate -> processObjectCreate(compilationUnit, objCreate));
+        //compilationUnit.findAll(ObjectCreationExpr.class).forEach(objCreate -> processObjectCreate(compilationUnit, objCreate));
     }
-
-    private void processObjectCreate(CompilationUnit compilationUnit, ObjectCreationExpr objectCreate) {
-        var declaration = objectCreate.resolveInvokedConstructor();
-        if (declaration.getPackageName().startsWith(libPackage)) {
-
-        }
-    }
+//
+//    private void processObjectCreate(CompilationUnit compilationUnit, ObjectCreationExpr objectCreate) {
+//        var declaration = objectCreate.resolveInvokedConstructor();
+//        if (declaration.getPackageName().startsWith(libPackage)) {
+//
+//        }
+//    }
 
     private void processMethodCall(CompilationUnit compilationUnit, MethodCallExpr call) {
         try {
             var declaration = call.resolveInvokedMethod();
-            if (declaration.getPackageName().startsWith(libPackage)) {
+            if (declaration.getPackageName().startsWith(libConfig.rootPackage)) {
                 var usage = new LibraryUsage(
                         compilationUnit,
                         call,
