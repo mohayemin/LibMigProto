@@ -61,44 +61,33 @@ public class UsageMiner {
     }
 
     private void mineCompilationUnit(CompilationUnit compilationUnit) {
-        var types = compilationUnit.getTypes();
-        types.forEach(this::mineType);
+        compilationUnit.findAll(MethodCallExpr.class).forEach(call -> processMethodCall(compilationUnit, call));
+        //compilationUnit.findAll(ObjectCreationExpr.class).forEach(objCreate -> processObjectCreate(compilationUnit, objCreate));
     }
+//
+//    private void processObjectCreate(CompilationUnit compilationUnit, ObjectCreationExpr objectCreate) {
+//        var declaration = objectCreate.resolveInvokedConstructor();
+//        if (declaration.getPackageName().startsWith(libPackage)) {
+//
+//        }
+//    }
 
-    private void mineType(TypeDeclaration<?> typeDeclaration) {
-        var methods = typeDeclaration.getMethods();
-        methods.forEach(md -> mineMethod(md));
-        // TODO: mine constructors
-        // TODO: mine inline initializations
-    }
-
-    private void mineMethod(MethodDeclaration methodDeclaration) {
-        var methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
-        methodCalls.forEach(mc -> processMethodCall(methodDeclaration, mc));
-        // TODO: does it properly find calls in lambda?
-    }
-
-
-    private void processMethodCall(Node caller, MethodCallExpr call) {
-        var compilationUnit = caller.findParent(CompilationUnit.class).get();
-        ResolvedMethodDeclaration declaration;
+    private void processMethodCall(CompilationUnit compilationUnit, MethodCallExpr call) {
         try {
-            declaration = call.resolveInvokedMethod();
+            var declaration = call.resolveInvokedMethod();
+            if (declaration.getPackageName().startsWith(libConfig.rootPackage)) {
+                var usage = new LibraryUsage(
+                        compilationUnit,
+                        call.getParentNode().get(),
+                        call,
+                        declaration
+                );
+                usages.add(usage);
+                System.out.println(usage.toCSV());
+            }
         } catch (Exception e) {
             // Not an API method invocation.
             // TODO: Possibly not the best way to do this.
-            return;
         }
-        if (declaration.getPackageName().startsWith(libConfig.rootPackage)) {
-            var usage = new LibraryUsage(
-                    compilationUnit,
-                    caller,
-                    call,
-                    declaration
-            );
-            usages.add(usage);
-            System.out.println(usage.toCSV());
-        }
-
     }
 }
