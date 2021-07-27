@@ -2,15 +2,19 @@
   "dataRoot": "../LibMigProto-Data",
   "libs": [
     {
-      "name": "supercsv",
       "gitUrl": "https://github.com/super-csv/super-csv",
-      "sourceRoot": "super-csv/super-csv/src/main/java",
+      "sourceRoot": "super-csv/src/main/java",
       "rootPackage": "org.supercsv",
       "clients": [
         {
-          "name": "algem",
           "gitUrl": "https://github.com/musictang/algem",
-          "sourceRoot": "src"
+          "sourceRoot": "src",
+          "skip": false
+        },
+        {
+          "gitUrl": "https://github.com/EOITek/jax",
+          "sourceRoot": "",
+          "skip": true
         }
       ]
     }

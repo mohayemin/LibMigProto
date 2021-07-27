@@ -6,8 +6,8 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 public record LibraryUsage(CompilationUnit compilationUnit,
-                           MethodCallExpr call,
                            Node caller,
+                           MethodCallExpr call,
                            ResolvedMethodDeclaration resolvedCall) {
 
     public String toCSV() {
