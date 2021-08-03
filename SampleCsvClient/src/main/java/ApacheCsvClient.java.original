@@ -14,9 +14,13 @@ public class ApacheCsvClient {
         builder = builder.setRecordSeparator('\n');
 
         var preferences = builder.build();
-        var csvParser = new CSVParser(new StringReader(csv), preferences);
-        var records = csvParser.getRecords();
+
+        var reader = new CSVParser(new StringReader(csv), preferences);
+
+        var results = reader.getRecords();
         var firstRecord = records.get(0);
-        return firstRecord.stream().toList();
+        var records = firstRecord.stream().toList();
+
+        return records;
     }
 }

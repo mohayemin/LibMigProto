@@ -15,12 +15,10 @@ public class TransformationRule {
         this.targetApi = target;
     }
 
-    public boolean apply(CompilationUnit cu) {
-        var sourceParent = (BlockStmt) sourceApi.getParentNode().get();
-        var index = sourceParent.getChildNodes().indexOf(sourceApi);
-
+    public boolean apply(BlockStmt parentBlock) {
+        var index = parentBlock.getChildNodes().indexOf(sourceApi);
         for (var targetApiPart: targetApi) {
-            sourceParent.addStatement(++index, (Statement) targetApiPart);
+            parentBlock.addStatement(++index, (Statement) targetApiPart);
         }
 
         sourceApi.remove();

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Playground {
@@ -43,15 +44,24 @@ builder = builder.setRecordSeparator(p3);
     public void applyTransformation() throws IOException {
         var ruleSet = new HardCodedTransformationRuleSet();
         var cu = JavaParser.parse(Path.of("D:\\PhD\\LibMigProto\\SampleCsvClient\\src\\main\\java\\SuperCsvClient.java.original"));
-        var sourceApi = cu.findFirst(ExpressionStmt.class).get();
+
+        var statements = cu.findAll(ExpressionStmt.class);
+
+        var builderStatement = statements.get(0);
+        var readerStatement = statements.get(2);
+        var recordsStatement = statements.get(3);
+
+        var parentBlock = (BlockStmt) builderStatement.getParentNode().get();
 
         System.out.println("=== before ===");
         System.out.println(cu);
 
-        System.out.println(sourceApi);
+        System.out.println(builderStatement);
 
-        var rule =  ruleSet.getRule(sourceApi);
-        var success = rule.apply(cu);
+        Arrays.asList(recordsStatement, readerStatement, builderStatement).forEach(sourceApi -> {
+            var rule =  ruleSet.getRule(sourceApi);
+            rule.apply(parentBlock);
+        });
 
         System.out.println("=== after ===");
         System.out.println(cu);

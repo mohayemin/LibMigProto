@@ -8,6 +8,7 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -31,15 +32,33 @@ public class HardCodedTransformationRuleSet implements TransformationRuleSet {
 
     @Override
     public TransformationRule getRule(Node source) {
-        var block = JavaParser.parseBlock("""
-                {
-                    var builder = CSVFormat.DEFAULT.builder();
-                    builder = builder.setDelimiter(p1);
-                    builder = builder.setQuote(p2);
-                    builder = builder.setRecordSeparator(p3);
-                }
-                                        """);
-        var target = block.getStatements();
+        String block = "";
+        if (source.toString().startsWith("var builder")) {
+            block = """
+                    {
+                        var builder = CSVFormat.DEFAULT.builder();
+                        builder = builder.setDelimiter(p0);
+                        builder = builder.setQuote(p1);
+                        builder = builder.setRecordSeparator(p2);
+                    }
+            """;
+        } else if (source.toString().startsWith("var reader")) {
+            block = """
+                    {
+                    var reader = new CSVParser(new StringReader(csv), preferences);
+                    }
+                    """;
+        } else if (source.toString().startsWith("var records")) {
+            block = """
+                    {
+                    var results = reader.getRecords();
+                    var firstRecord = results.get(p3);
+                    var records = firstRecord.stream().toList();
+                    }
+                    """;
+        }
+
+        var target = JavaParser.parseBlock(block).getStatements();
 
         return new TransformationRule(source, target);
     }
