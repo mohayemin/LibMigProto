@@ -1,0 +1,22 @@
+import org.apache.commons.csv.*;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+
+public class ApacheCsvClient {
+    String csv = "Taqee;\"Jan 1, 2020\"";
+
+    public List<String> readFirstRow() throws IOException {
+        var builder = CSVFormat.DEFAULT.builder();
+        builder = builder.setDelimiter(';');
+        builder = builder.setQuote('"');
+        builder = builder.setRecordSeparator('\n');
+
+        var preferences = builder.build();
+        var csvParser = new CSVParser(new StringReader(csv), preferences);
+        var records = csvParser.getRecords();
+        var firstRecord = records.get(0);
+        return firstRecord.stream().toList();
+    }
+}
