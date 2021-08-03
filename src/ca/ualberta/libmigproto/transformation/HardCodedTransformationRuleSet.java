@@ -37,9 +37,9 @@ public class HardCodedTransformationRuleSet implements TransformationRuleSet {
             block = """
                     {
                         var builder = CSVFormat.DEFAULT.builder();
-                        builder = builder.setDelimiter(p0);
-                        builder = builder.setQuote(p1);
-                        builder = builder.setRecordSeparator(p2);
+                        builder = builder.setQuote(p_0);
+                        builder = builder.setDelimiter(p_1);                        
+                        builder = builder.setRecordSeparator(p_2);
                     }
             """;
         } else if (source.toString().startsWith("var reader")) {
@@ -52,7 +52,7 @@ public class HardCodedTransformationRuleSet implements TransformationRuleSet {
             block = """
                     {
                     var results = reader.getRecords();
-                    var firstRecord = results.get(p3);
+                    var firstRecord = results.get(p_3);
                     var records = firstRecord.stream().toList();
                     }
                     """;
