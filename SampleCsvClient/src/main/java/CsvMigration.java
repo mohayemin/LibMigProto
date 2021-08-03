@@ -13,7 +13,7 @@ public class CsvMigration {
         var builder = CSVFormat.DEFAULT.builder();
         builder = builder.setQuote('"');
         builder = builder.setDelimiter(';');
-        builder = builder.setRecordSeparator("\n");
+        builder = builder.setRecordSeparator('"');
         var preferences = builder.build();
         var reader = new CSVParser(new StringReader(csv), preferences);
         var results = reader.getRecords();

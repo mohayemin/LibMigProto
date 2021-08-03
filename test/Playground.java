@@ -1,12 +1,16 @@
 import ca.ualberta.libmigproto.synthesis.SimpleSynthesizer;
 import ca.ualberta.libmigproto.transformation.HardCodedTransformationRuleSet;
+import ca.ualberta.libmigproto.util.Permutation;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LiteralExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
@@ -18,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Playground {
@@ -65,21 +71,40 @@ public class Playground {
 
         var parentBlock = (BlockStmt) builderStatement.getParentNode().get();
         var constants = parentBlock.findAll(LiteralExpr.class);
-        constants.add(new IntegerLiteralExpr(0));
+        constants.add(0, new IntegerLiteralExpr(0));
 
         Arrays.asList(recordsStatement, readerStatement, builderStatement).forEach(sourceApi -> {
             var rule =  ruleSet.getRule(sourceApi);
             rule.apply(parentBlock);
         });
 
-        new SimpleSynthesizer().fillHole(parentBlock, constants);
+        var holes = parentBlock.findAll(NameExpr.class)
+                .stream()
+                .filter(name -> name.getNameAsString().startsWith("p_"))
+                .toList();
+        var permutation = new Permutation(constants, holes.size());
 
-        runTest();
+        var found = false;
 
-        Files.write(Path.of("D:\\PhD\\LibMigProto\\SampleCsvClient\\src\\main\\java\\CsvMigration.java"), Collections.singleton(cu.toString()), StandardCharsets.UTF_8);
+        while (permutation.hasNext() && !found) {
+            var cloneParent = parentBlock.clone();
+            parentBlock.replace(cloneParent);
+            var fillers = permutation.next();
+            System.out.println(fillers);
+            new SimpleSynthesizer().fillHole(cloneParent, fillers);
+            Files.write(Path.of("D:\\PhD\\LibMigProto\\SampleCsvClient\\src\\main\\java\\CsvMigration.java"), Collections.singleton(cu.toString()), StandardCharsets.UTF_8);
+            if(runTest()) {
+                found = true;
+                break;
+            }
+            cloneParent.replace(parentBlock);
+            Files.write(Path.of("D:\\PhD\\LibMigProto\\SampleCsvClient\\src\\main\\java\\CsvMigration.java"), Collections.singleton(cu.toString()), StandardCharsets.UTF_8);
+        }
+
+        Assertions.assertTrue(found);
     }
 
-    public void runTest() throws IOException {
+    public boolean runTest() throws IOException {
         String PATH_TO_GRADLE_PROJECT = "D:\\PhD\\LibMigProto\\SampleCsvClient\\";
         String GRADLEW_EXECUTABLE = "gradlew.bat";
         String GRADLE_TASK = "test";
@@ -90,6 +115,17 @@ public class Playground {
                 process.getErrorStream()));
 
         var error = errinput.lines().collect(Collectors.joining());
-        System.err.println(error);
+        // System.err.println(error);
+
+        return error == null || error.isEmpty();
+    }
+
+    @Test
+    public void PermutationTest() {
+        var perm = new Permutation(List.of(0, 1, 2), 2);
+        while (perm.hasNext()) {
+            var n = perm.next();
+            System.out.println(n);
+        }
     }
 }
